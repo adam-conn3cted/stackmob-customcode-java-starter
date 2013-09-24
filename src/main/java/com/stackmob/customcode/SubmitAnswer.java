@@ -88,7 +88,7 @@ public class SubmitAnswer implements CustomCodeMethod {
 	        
 	        logger.debug("Correct answer to question is '" + correctAnswerString + "'");
 	        
-	        boolean correctlyAnswered = answer.equals(correctAnswer);
+	        boolean correctlyAnswered = answer.equals(correctAnswerString);
 	        
 	        logger.debug("User's answer was " + (correctlyAnswered ? "correct" : "incorrect"));
 	        
