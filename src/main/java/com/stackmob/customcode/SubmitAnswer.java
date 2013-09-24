@@ -141,7 +141,7 @@ public class SubmitAnswer implements CustomCodeMethod {
 	
 	private long incrementUserPoints(DataService ds, String username, int userPointsIncrement, LoggerService logger) throws InvalidSchemaException, DatastoreException {
 		List<SMCondition> query = new ArrayList<SMCondition>();
-		query.add(new SMEquals("user", new SMString(username)));
+		query.add(new SMEquals("username", new SMString(username)));
 		List<SMObject> users = ds.readObjects("user", query);
 		
 		logger.debug("In incrementUserPoints(), found " + users.size() + " users");
