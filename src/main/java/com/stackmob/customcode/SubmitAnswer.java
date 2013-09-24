@@ -94,7 +94,11 @@ public class SubmitAnswer implements CustomCodeMethod {
 	        
 	        int userPointsIncrement;
 	        if(correctlyAnswered) {
-	        	Boolean hasBeenCorrectlyAnsweredPreviously = (Boolean) question.getValue().get("correctly_answered").getValue();
+	        	SMValue<Boolean> correctlyAnsweredValue = question.getValue().get("correctly_answered");
+	        	Boolean hasBeenCorrectlyAnsweredPreviously = correctlyAnsweredValue == null ? false : correctlyAnsweredValue.getValue();
+	        	
+	        	logger.debug("Question has " + (hasBeenCorrectlyAnsweredPreviously ? "" : "not") + " been answered correctly previously");
+	        	
 	        	if(hasBeenCorrectlyAnsweredPreviously) {
 	        		userPointsIncrement = 1;
 	        	}
