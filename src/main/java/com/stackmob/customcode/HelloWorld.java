@@ -60,7 +60,7 @@ public class HelloWorld implements CustomCodeMethod {
 	  
 	  DataService ds = serviceProvider.getDataService();
 	  
-	  String questionId = request.getParams().get("question-id");
+	  String questionId = request.getParams().get("question_id");
 	  String answer = request.getParams().get("answer");
 	  
 	    Map<String, Object> response = new HashMap<String, Object>();
