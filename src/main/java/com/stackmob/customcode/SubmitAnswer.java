@@ -16,12 +16,19 @@
 
 package com.stackmob.customcode;
 
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.stackmob.core.DatastoreException;
 import com.stackmob.core.InvalidSchemaException;
 import com.stackmob.core.customcode.CustomCodeMethod;
 import com.stackmob.core.rest.ProcessedAPIRequest;
 import com.stackmob.core.rest.ResponseToProcess;
 import com.stackmob.sdkapi.DataService;
+import com.stackmob.sdkapi.LoggerService;
 import com.stackmob.sdkapi.SDKServiceProvider;
 import com.stackmob.sdkapi.SMBoolean;
 import com.stackmob.sdkapi.SMCondition;
@@ -33,17 +40,11 @@ import com.stackmob.sdkapi.SMString;
 import com.stackmob.sdkapi.SMUpdate;
 import com.stackmob.sdkapi.SMValue;
 
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class HelloWorld implements CustomCodeMethod {
+public class SubmitAnswer implements CustomCodeMethod {
 
   @Override
   public String getMethodName() {
-    return "submit_question";
+    return "submit_answer";
   }
 
   @Override
@@ -53,7 +54,12 @@ public class HelloWorld implements CustomCodeMethod {
 
   @Override
   public ResponseToProcess execute(ProcessedAPIRequest request, SDKServiceProvider serviceProvider) {
+	  LoggerService logger = serviceProvider.getLoggerService(SubmitAnswer.class);
+	  
 	  String loggedInUser = request.getLoggedInUser();
+	  
+	  logger.debug("Call to submit_question with user '" + loggedInUser + "'");
+	  
 	  loggedInUser = "zjFe6jCJ1B1nZaMWXacG443pwqFBvbxi";
 	  if(loggedInUser == null) {
 		  return new ResponseToProcess(HttpURLConnection.HTTP_FORBIDDEN);
@@ -63,6 +69,9 @@ public class HelloWorld implements CustomCodeMethod {
 	  
 	  String questionId = request.getParams().get("question_id");
 	  String answer = request.getParams().get("answer");
+	  
+	  logger.debug("Call to submit_question with questionId '" + questionId + "'");
+	  logger.debug("Call to submit_question with answer '" + answer + "'");
 	  
 	    Map<String, Object> response = new HashMap<String, Object>();
 	 
@@ -77,7 +86,12 @@ public class HelloWorld implements CustomCodeMethod {
 	        SMValue<String> correctAnswer = question.getValue().get("correct_answer");
 	        String correctAnswerString = correctAnswer.getValue();
 	        
+	        logger.debug("Correct answer to question is '" + correctAnswerString + "'");
+	        
 	        boolean correctlyAnswered = answer.equals(correctAnswer);
+	        
+	        logger.debug("User's answer was " + (correctlyAnswered ? "correct" : "incorrect"));
+	        
 	        int userPointsIncrement;
 	        if(correctlyAnswered) {
 	        	Boolean hasBeenCorrectlyAnsweredPreviously = (Boolean) question.getValue().get("correctly_answered").getValue();
@@ -95,16 +109,22 @@ public class HelloWorld implements CustomCodeMethod {
 	        
 	        long newUserPointsTotal = incrementUserPoints(ds, loggedInUser, userPointsIncrement);
 	        
+	        logger.debug("User's new points total is '" + newUserPointsTotal + "'");
+	        
 	        response.put("correct", correctlyAnswered);
 	        response.put("points", newUserPointsTotal);
 	 
 	    } catch (InvalidSchemaException ise) {
+	    	logger.error("Unable to process submit question request", ise);
 	    	response.put("message", ise.getMessage());
 	    	return new ResponseToProcess(HttpURLConnection.HTTP_INTERNAL_ERROR, response);
 	    } catch (DatastoreException dse) {
+	    	logger.error("Unable to process submit question request", dse);
 	    	response.put("message", dse.getMessage());
 	    	return new ResponseToProcess(HttpURLConnection.HTTP_INTERNAL_ERROR, response);
 	    }
+	    
+	    logger.debug("Answer submitted successfully with response:\n" + response);
 
     return new ResponseToProcess(HttpURLConnection.HTTP_OK, response);
   }
