@@ -151,7 +151,7 @@ public class SubmitAnswer implements CustomCodeMethod {
 	    logger.debug("user found: " + user);
 	    
 	    SMValue<Integer> userPoints = user.getValue().get("points");
-	    Integer currentPointsTotal = userPoints.getValue();
+	    long currentPointsTotal = userPoints.getValue().longValue();
 	    
 	    logger.debug("User's current points total: '" + currentPointsTotal + "'");
 	    
