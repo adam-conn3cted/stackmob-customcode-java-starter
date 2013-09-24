@@ -60,7 +60,7 @@ public class SubmitAnswer implements CustomCodeMethod {
 	  
 	  logger.debug("Call to submit_question with user '" + loggedInUser + "'");
 	  
-	  loggedInUser = "zjFe6jCJ1B1nZaMWXacG443pwqFBvbxi";
+	  loggedInUser = "jacque";
 	  if(loggedInUser == null) {
 		  return new ResponseToProcess(HttpURLConnection.HTTP_FORBIDDEN);
 	  }
@@ -107,7 +107,7 @@ public class SubmitAnswer implements CustomCodeMethod {
 	        	userPointsIncrement = 0;
 	        }
 	        
-	        long newUserPointsTotal = incrementUserPoints(ds, loggedInUser, userPointsIncrement);
+	        long newUserPointsTotal = incrementUserPoints(ds, loggedInUser, userPointsIncrement, logger);
 	        
 	        logger.debug("User's new points total is '" + newUserPointsTotal + "'");
 	        
@@ -135,7 +135,7 @@ public class SubmitAnswer implements CustomCodeMethod {
 	  ds.updateObject("question", new SMString(questionId), update);
 	  }
 	
-	private long incrementUserPoints(DataService ds, String username, int userPointsIncrement) throws InvalidSchemaException, DatastoreException {
+	private long incrementUserPoints(DataService ds, String username, int userPointsIncrement, LoggerService logger) throws InvalidSchemaException, DatastoreException {
 		List<SMCondition> query = new ArrayList<SMCondition>();
 		query.add(new SMEquals("user", new SMString(username)));
 		List<SMObject> users = ds.readObjects("user", query);
@@ -144,12 +144,17 @@ public class SubmitAnswer implements CustomCodeMethod {
 	    SMValue<Integer> userPoints = user.getValue().get("points");
 	    Integer currentPointsTotal = userPoints.getValue();
 	    
+	    logger.debug("User's current points total: '" + currentPointsTotal + "'");
+	    
 	    long newPointsTotal;
 	    if(userPointsIncrement == 0) {
 	    	newPointsTotal = currentPointsTotal;
 	    }
 	    else {
 	    	newPointsTotal = currentPointsTotal + userPointsIncrement;
+	    	
+	    	logger.debug("Setting points total to '" + newPointsTotal + "' for user '" + username + "'");
+	    	
 	        List<SMUpdate> update = new ArrayList<SMUpdate>();
 	        update.add(new SMSet("points", new SMInt(newPointsTotal)));
 	        ds.updateObject("user", new SMString(username), update);
