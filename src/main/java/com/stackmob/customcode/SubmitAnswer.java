@@ -143,7 +143,12 @@ public class SubmitAnswer implements CustomCodeMethod {
 		List<SMCondition> query = new ArrayList<SMCondition>();
 		query.add(new SMEquals("user", new SMString(username)));
 		List<SMObject> users = ds.readObjects("user", query);
+		
+		logger.debug("In incrementUserPoints(), found " + users.size() + " users");
+		
 	    SMObject user = users.get(0);
+	    
+	    logger.debug("user found: " + user);
 	    
 	    SMValue<Integer> userPoints = user.getValue().get("points");
 	    Integer currentPointsTotal = userPoints.getValue();
